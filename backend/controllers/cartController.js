@@ -1,4 +1,5 @@
 const User = require("./../models/userModel");
+const Product = require("./../models/productModel");
 
 exports.addCart = async (req, res) => {
   try {
@@ -33,14 +34,21 @@ exports.getAllCart = async (req, res) => {
     if (!isUser) {
       throw new Error("User not found while showing cart!", 404);
     }
+    let cartArray = [];
+    let cartItems = isUser.cart;
+    for (let cart of cartItems) {
+      // console.log(cart.product);
+      const product = await Product.findById(cart.product);
+      cartArray.push(product);
+    }
     return res.status(200).json({
       status: "ok",
-      data: isUser.cart,
+      data: cartArray,
     });
   } catch (error) {
     res.status(400).json({
       status: "error!",
-      message: err + err,
+      message: error.message,
     });
   }
 };
