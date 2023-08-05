@@ -65,7 +65,7 @@ const Arrow = (props: any) => {
       <hr className="mt-3 w-full mb-3 border-gray-500" />
       <div className="flex py-4 mb-5">
         <div className="w-20" key={props.i}>
-          <Image src={props.e.photo.url} alt="p14" />
+          <Image src={props.e.photoUrl} alt="p14" />
         </div>
         <div className="ml-2">
           <div className="size-sm">{props.e.name}</div>

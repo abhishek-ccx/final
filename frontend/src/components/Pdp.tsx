@@ -8,9 +8,11 @@ import Link from "next/link";
 import Navbar from "./Navbar";
 import SocialMedia from "./SocialMedia";
 import Footer from "./Footer";
-import { useContext } from "react";
-import { ProductContext } from "@/contexts/ProductContext";
-import { CartContext } from "@/contexts/CartContext";
+import { useContext, useEffect, useState } from "react";
+// import { ProductContext } from "@/contexts/ProductContext";
+// import { CartContext } from "@/contexts/CartContext";
+import router from "next/router";
+import axios from "axios";
 
 export default function Pdp() {
   const Images = [
@@ -28,26 +30,65 @@ export default function Pdp() {
     },
   ];
 
-  // const [currImage, setCurrImage] = useState(Images[0]);
-  const { productData } = useContext(ProductContext) as any;
-  const { addToCart, addToCompare } = useContext(CartContext) as any;
+  // const { addToCart, addToCompare } = useContext(CartContext) as any;
+  const { productId } = router.query;
 
-  const handleAddToCart = () => {
-    addToCart(productData);
-    // setCartTotalItem(cartTotalItem + 1);
-  };
+  const [productData, setProductData] = useState([]);
 
-  const handleCompare = () => {
-    if (productData.length > 4) {
-      alert("Four items are already added!");
-    } else {
-      addToCompare(productData);
+  const handleAddToCart = async (productData) => {
+    // addToCart(productData);
+    try {
+      const token = localStorage.getItem("token");
+      // console.log(token);
+      if (!token) {
+        // Redirect to the login page if the user is not authenticated
+        router.push("/login");
+      } else {
+        const res = await axios.patch(
+          `http://127.0.0.1:3000/api/v1/cart/addcart`,
+          {
+            product: productData._id,
+            quantity: productData.quantity,
+          },
+          { headers: { authorization: localStorage.getItem("token") } },
+        );
+        console.log(res.status);
+        if (res.status == 200) {
+          router.push("/cart");
+          console.log("product send to cart add API");
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  // useEffect(() => {
-  //   console.log(productData);
-  // }, [productData]);
+  useEffect(() => {
+    const fetchProductData = async () => {
+      try {
+        if (productId) {
+          const res = await axios.get(
+            `http://127.0.0.1:3000/api/v1/products/${productId}`,
+          );
+          if (res.data.data.product) {
+            setProductData(res.data.data.product);
+          } else {
+            throw new Error("Product not found");
+          }
+          console.log(res.data);
+        } else {
+          throw new Error("Product not found..");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchProductData();
+  }, [productId]);
+
+  useEffect(() => {
+    console.log(productData);
+  }, [productData]);
 
   return (
     <>
@@ -88,12 +129,12 @@ export default function Pdp() {
                 </div>
               </div>
               <div>
-                {/* <img src="./img/p-3.jpg" className="w-full" alt="shirt_photo"> */}
                 <Image
                   className="w-full hover:border-orange-500 cursor-pointer"
-                  // src={productData.photo.url}
-                  src={productData.photo.url}
+                  src={productData.photoUrl}
                   alt="p14"
+                  width={500}
+                  height={500}
                 />
               </div>
               <div className="grid lg:grid-cols-7 grid-flow-col gap-0 pt-3">
@@ -108,7 +149,6 @@ export default function Pdp() {
                               src={e.photo.url}
                               alt="p14"
                               key={i}
-                              // onClick={() => setCurrImage(e)}
                             />
                           </div>
                         </>
@@ -123,7 +163,6 @@ export default function Pdp() {
                 instructions and cleaning instructions.
               </p>
             </div>
-            {/* <div class="bg-slate-300 h-80"> */}
 
             <div className="text-xs">
               <div className="lg:h-12 h-8">
@@ -158,7 +197,7 @@ export default function Pdp() {
                   $42.00
                 </span>
                 <span className="text-orange-500 lg:text-base text-sm pl-2">
-                  {"$" + productData.price.toFixed(2)}
+                  {"$" + productData.price}
                 </span>
                 <p className="lg:pt-2 pt-0.5 lg:text-sm text-[0.6rem]">Color</p>
                 <div className="flex flex-initial lg:mt-2 mt-1">
@@ -218,20 +257,17 @@ export default function Pdp() {
                 />
 
                 <div className="flex items-center space-x-2 lg:pt-4 pt-0.5">
-                  <Link href="/cart">
-                    <button
-                      className="lg:my-2 my-[0.2rem] rounded-none border-2 border-transparent bg-orange-500 lg:px-4 lg:py-1.5 lg:font-semibold font-normal text-white hover:border-solid hover:border-orange-500 hover:bg-white hover:text-orange-500"
-                      onClick={handleAddToCart}
-                    >
-                      Add to Cart
-                    </button>
-                  </Link>
+                  {/* <Link href="/cart"> */}
+                  <button
+                    className="lg:my-2 my-[0.2rem] rounded-none border-2 border-transparent bg-orange-500 lg:px-4 lg:py-1.5 lg:font-semibold font-normal text-white hover:border-solid hover:border-orange-500 hover:bg-white hover:text-orange-500"
+                    onClick={() => handleAddToCart(productData)}
+                  >
+                    Add to Cart
+                  </button>
+                  {/* </Link> */}
 
                   <Link href="/compare">
-                    <button
-                      className="lg:my-2 my-[0.2rem] rounded-none border-2 border-transparent bg-orange-500 lg:px-4 lg:py-1.5 lg:font-semibold font-normal text-white hover:border-solid hover:border-orange-500 hover:bg-white hover:text-orange-500"
-                      onClick={handleCompare}
-                    >
+                    <button className="lg:my-2 my-[0.2rem] rounded-none border-2 border-transparent bg-orange-500 lg:px-4 lg:py-1.5 lg:font-semibold font-normal text-white hover:border-solid hover:border-orange-500 hover:bg-white hover:text-orange-500">
                       Add to Compare
                     </button>
                   </Link>

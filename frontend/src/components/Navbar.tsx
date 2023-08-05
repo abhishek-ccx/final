@@ -1,9 +1,21 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import bag from "./../img/bag.jpg";
 import user from "./../img/user.png";
 import Link from "next/link";
 
 const Navbar = () => {
+  const router = useRouter();
+
+  const handleLogout = (e) => {
+    // Remove the token from local storage on logout
+    e.preventDefault();
+    localStorage.removeItem("token");
+    // Redirect to the login page after logout
+    router.push("/login");
+  };
+
   return (
     <>
       <div className="navbar">
@@ -41,12 +53,7 @@ const Navbar = () => {
                     fill="none"
                     viewBox="0 0 20 20"
                   >
-                    <path
-                      stroke="currentColor"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
+                    <path d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                   </svg>
                 </div>
               </div>
@@ -109,7 +116,8 @@ const Navbar = () => {
                         <Image src={user} className="w-full" alt="user-logo" />
                       </div>
                       <span className="text-black dark:text-black hover:text-orange-400 pl-2">
-                        Log In
+                        {/* <button onClick={handleLogout}>Log out</button> */}
+                        <button onClick={handleLogout}>Log out</button>
                       </span>
                     </Link>
                   </li>
@@ -166,9 +174,6 @@ const Navbar = () => {
                               alt="bag-logo"
                             />
                           </div>
-                          {/* <div className="bg-red rounded h-20 w-20">
-                            <span className="text-white">1</span>
-                          </div> */}
                         </Link>
                       </li>
                     </ul>

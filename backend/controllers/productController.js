@@ -1,5 +1,6 @@
 const Product = require("./../models/productModel");
 
+// 127.0.0.1:3000/api/v1/products/
 exports.createProduct = async (req, res) => {
   try {
     const newProduct = await Product.create(req.body);
@@ -21,6 +22,9 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find();
+    if (!products) {
+      throw new Error("Products not found.", 404);
+    }
 
     res.status(200).json({
       status: "success",
@@ -29,9 +33,9 @@ exports.getAllProducts = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).json({
+    return res.status(err.statusCode || 500).json({
       status: "error!",
-      message: "Not able to get data",
+      message: err.message,
     });
   }
 };
@@ -40,6 +44,9 @@ exports.getProduct = async (req, res) => {
   try {
     // console.log(req.params.id);
     const product = await Product.findById(req.params.id.trim());
+    if (!product) {
+      throw new Error("product not found", 404);
+    }
 
     res.status(200).json({
       status: "success",
@@ -48,9 +55,9 @@ exports.getProduct = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(404).json({
+    return res.status(err.statusCode || 500).json({
       status: "error!",
-      message: err + err,
+      message: err.message,
     });
   }
 };

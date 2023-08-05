@@ -3,6 +3,18 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
+const cartItemSchema = new mongoose.Schema({
+  product: {
+    type: mongoose.Types.ObjectId,
+    ref: "Product",
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -50,6 +62,19 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  cart: [
+    {
+      product: {
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        default: 1,
+      },
+    },
+  ],
 });
 
 // PASSWORD ENCRYPTION
@@ -59,14 +84,6 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
-
-// INSTANCE METHODS
-userSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
 
 userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
@@ -80,17 +97,27 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-userSchema.methods.changePasswordAfter = function (JWTTimeStamp) {
-  if (this.passwordChangedAt) {
-    const changedTimeStamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimeStamp < changedTimeStamp;
-  }
-
-  return false;
+// INSTANCE METHODS
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+// userSchema.methods.cart = async function () {};
+
+// userSchema.methods.changePasswordAfter = function (JWTTimeStamp) {
+//   if (this.passwordChangedAt) {
+//     const changedTimeStamp = parseInt(
+//       this.passwordChangedAt.getTime() / 1000,
+//       10
+//     );
+//     return JWTTimeStamp < changedTimeStamp;
+//   }
+
+//   return false;
+// };
 
 userSchema.methods.createPasswordToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
