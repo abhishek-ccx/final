@@ -141,7 +141,10 @@ const Checkout = () => {
                     height={100}
                   /> */}
                 </div>
-                <div className="ml-1">Secure Checkout</div>
+                <div className="ml-1">
+                  <button onClick={handleAddToOrder}>Secure Checkout</button>
+                  {/* <button onClick={handleAddToOrder}>Secure Checkout</button> */}
+                </div>
               </div>
             </div>
           </div>

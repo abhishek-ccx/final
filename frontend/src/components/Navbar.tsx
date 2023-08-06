@@ -94,6 +94,7 @@ const Navbar = () => {
                       Sale
                     </Link>
                   </li>
+
                   <li>
                     <Link
                       href="#"
@@ -108,6 +109,14 @@ const Navbar = () => {
                       className="text-black dark:text-black hover:text-orange-400"
                     >
                       Contact
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/admin"
+                      className="text-black dark:text-black hover:text-orange-400"
+                    >
+                      <button>Admin</button>
                     </Link>
                   </li>
                   <li>
