@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { ProductContext } from "@/contexts/ProductContext";
-// import { fetchData } from "@/lib/fetchData";
-
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,34 +13,49 @@ const ImagesComp = () => {
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchData = async (page) => {
+    try {
+      const res = await axios.get(`http://127.0.0.1:3000/api/v1/products`, {
+        params: {
+          page,
+          limit: 8,
+        },
+      });
+      setProducts(res.data.data.products);
+      setTotalPages(res.data.data.totalPages); // Use totalPages from the API response
+      setLoading(false);
+    } catch (err) {
+      console.error("Error in fetching data: ", err);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // const token = localStorage.getItem("token");
-        // if (!token) {
-        //   // Redirect to the login page if the user is not authenticated
-        //   router.push("/login");
-        // } else {
-        const res = await axios.get(
-          `http://127.0.0.1:3000/api/v1/products/`,
-          // { headers: { authorization: localStorage.getItem("token") } },
-        );
-        setProducts(res.data.data.products);
-        setLoading(false);
-        // }
-      } catch (err) {
-        console.error("Error in fetching data: ", err);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
+
+  const handlePageClick = (page: any) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
@@ -79,6 +90,36 @@ const ImagesComp = () => {
           </div>
         );
       })}
+
+      <div className="flex justify-center mt-4">
+        <button
+          className="mx-2 px-3 py-1 bg-gray-300"
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          Prev
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+          (page) => (
+            <button
+              key={page}
+              className={`mx-2 px-3 py-1 ${
+                currentPage === page ? "bg-gray-800 text-white" : "bg-gray-300"
+              }`}
+              onClick={() => handlePageClick(page)}
+            >
+              {page}
+            </button>
+          ),
+        )}
+        <button
+          className="mx-2 px-3 py-1 bg-gray-300"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </>
   );
 };

@@ -2,7 +2,8 @@ const express = require("express");
 const {
   addCart,
   getAllCart,
-  getCartProduct,
+  removeCart,
+  updateCart,
 } = require("./../controllers/cartController");
 
 const router = express.Router();
@@ -10,6 +11,8 @@ const router = express.Router();
 const { authenticate } = require("./../controllers/authController");
 router.patch("/addcart", authenticate, addCart);
 router.get("/getallcart", authenticate, getAllCart);
+router.put("/updatecart/:id", authenticate, updateCart);
+router.delete("/removecart/:id", authenticate, removeCart);
 // router.get("/getcartproduct/:id", authenticate, getCartProduct);
 
 module.exports = router;

@@ -5,25 +5,18 @@ import SocialMedia from "./SocialMedia";
 import Footer from "./Footer";
 // import Image from "next/image";
 import Arrow from "./Arrow";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import router from "next/router";
-// import { CartContext } from "@/contexts/CartContext";
 
 const Checkout = () => {
-  // const {
-  //   cartItems,
-  //   cartTotalPrice,
-  //   // cartTotalItem,
-  //   // setCartTotalItem,
-  // } = useContext(CartContext) as any;
   const [cartItems, setCartItems] = useState([]);
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          // Redirect to the login page if the user is not authenticated
           router.push("/login");
         } else {
           const res = await axios.get(
@@ -31,25 +24,35 @@ const Checkout = () => {
             { headers: { authorization: localStorage.getItem("token") } },
           );
 
-          // setProducts(res.data.data.products);
-          // setLoading(false);
+          // cartArray
+          // =>[product, cart.quantity, cart._id]
           // console.log(res.data);
           setCartItems(res.data);
         }
       } catch (err) {
         console.error("Error in fetching data: ", err);
-        // setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log(cartItems);
-  }, [cartItems]);
+  const calculateTotalPrice = (cartItems) => {
+    if (Array.isArray(cartItems) && cartItems.length > 0) {
+      const totalPrice = cartItems.reduce(
+        (accumulator, item) => accumulator + item.product.price * item.quantity,
+        0,
+      );
+      setCartTotalPrice(totalPrice);
+    } else {
+      setCartTotalPrice(0);
+    }
+  };
 
-  const cartTotalPrice = 0;
+  useEffect(() => {
+    console.log(cartItems.data);
+    calculateTotalPrice(cartItems.data);
+  }, [cartItems.data]);
 
   return (
     <>
@@ -62,12 +65,16 @@ const Checkout = () => {
             <h1 className="text-xl font-semibold mb-2">My cart</h1>
             <hr className="mt-3 w-full mb-3 border-gray-500" />
             <div>
-              {/* {console.log(Array.isArray(cartItems))} */}
-              {/* {console.log(cartItems.data)} */}
               {Array.isArray(cartItems.data) && cartItems.data.length > 0 ? (
                 cartItems.data.map((e: any, i: any) => (
                   <React.Fragment key={i}>
-                    <Arrow e={e} i={i} />
+                    <Arrow
+                      e={e.product}
+                      quantity={e.quantity}
+                      id={e.id}
+                      i={i}
+                      // calculateTotalPrice={calculateTotalPrice}
+                    />
                   </React.Fragment>
                 ))
               ) : (
@@ -106,7 +113,9 @@ const Checkout = () => {
               <hr className="mt-3 w-full mb-3 border-gray-500" />
               <div className="flex">
                 <div>Subtotal</div>
-                <div className="ml-64">{"$" + cartTotalPrice.toFixed(2)}</div>
+                <div className="ml-64">
+                  {"$" + (cartTotalPrice * 1).toFixed(2)}
+                </div>
               </div>
               <div className="mt-2">
                 <u>Estimate Shipping</u>
@@ -114,7 +123,9 @@ const Checkout = () => {
               <hr className="mt-3 w-full mb-3 border-gray-500" />
               <div className="flex">
                 <div>Total</div>
-                <div className="ml-72">{"$" + cartTotalPrice.toFixed(2)}</div>
+                <div className="ml-72">
+                  {"$" + (cartTotalPrice * 1).toFixed(2)}
+                </div>
               </div>
               <div>
                 <button className="bg-orange-600 text-white w-96 mt-8 h-9">

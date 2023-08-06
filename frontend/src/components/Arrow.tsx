@@ -1,65 +1,84 @@
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { CartContext } from "@/contexts/CartContext";
+import axios from "axios";
+
+// import { CartContext } from "@/contexts/CartContext";
 // import Incdec from "./Incdec";
 
+// useEffect(() => {}, []);
+
 const Arrow = (props: any) => {
-  console.log(props.e);
-  const {
-    // cartItems,
-    setCartItems,
-    removeFromCart,
-    // cartTotalPrice,
-    // cartTotalItem,
-    // setCartTotalItem,
-  } = useContext(CartContext) as any;
+  // console.log(props.e);
+  const [isRemoved, setIsRemoved] = useState(false);
+  const [quantity, setQuantity] = useState(props.quantity);
 
-  const removeHandler = (id: any) => {
-    removeFromCart(id);
-  };
-
-  const increaseCount = () => {
-    // console.log("clalles");
-    setCartItems((prevProducts: any) => {
-      const updatedProducts = prevProducts.map((product: any) => {
-        if (product.id === props.e.id) {
-          return {
-            ...product,
-            quantity: product.quantity + 1,
-          };
-        }
-        return product;
-      });
-      return updatedProducts;
-    });
-    // setCounter(counter + 1);
-    // props.quantity += 1;
-  };
-
-  const decreaseCount = () => {
-    setCartItems((prevProducts: any) => {
-      const updatedProducts = prevProducts
-        .map((product: any) => {
-          if (product.id === props.e.id) {
-            return {
-              ...product,
-              quantity: product.quantity - 1,
-            };
-          }
-          return product;
-        })
-        .filter((items: any) => items.quantity !== 0);
-      return updatedProducts;
-    });
-    // if (counter > 1) {
-    //   setCounter(counter - 1);
-    // }
-    if (props.quantity > 1) {
-      // props.quantity -= 1;
+  const removeHandler = async (productID) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/v1/cart/removecart/${productID}`,
+        {
+          headers: { authorization: localStorage.getItem("token") },
+        },
+      );
+      if (response.status === 200) {
+        setIsRemoved(true);
+        // console.log(response.data);
+        // fetchCartItem();
+        console.log("successfully removed item from cart");
+      }
+    } catch (error) {
+      console.error("Error while removing item from cart.", error);
     }
   };
+
+  const increaseCount = async () => {
+    try {
+      // console.log(props.id);
+      const response = await axios.put(
+        `http://localhost:3000/api/v1/cart/updatecart/${props.id}`,
+        {
+          quantity: quantity + 1,
+        },
+        {
+          headers: { authorization: localStorage.getItem("token") },
+        },
+      );
+      if (response.status === 200) {
+        setQuantity(quantity + 1);
+        console.log("Successfully increased quantity");
+      }
+    } catch (error) {
+      console.error("Error while increasing quantity.", error);
+    }
+  };
+
+  const decreaseCount = async () => {
+    if (quantity > 1) {
+      try {
+        const response = await axios.put(
+          `http://localhost:3000/api/v1/cart/updatecart/${props.id}`,
+          {
+            quantity: quantity - 1,
+          },
+          {
+            headers: { authorization: localStorage.getItem("token") },
+          },
+        );
+        if (response.status === 200) {
+          setQuantity(quantity - 1);
+          console.log("Successfully decreased quantity");
+        }
+      } catch (error) {
+        console.error("Error while decreasing quantity.", error);
+      }
+    }
+  };
+
+  if (isRemoved) {
+    return null; // Hide the item from the cart once it is removed
+  }
 
   return (
     <>
@@ -83,7 +102,7 @@ const Arrow = (props: any) => {
           >
             -
           </button>
-          <span className="px-3 py-1 text-gray-700">{props.e.quantity}</span>
+          <span className="px-3 py-1 text-gray-700">{quantity}</span>
           <button
             className="px-1 py-1 text-gray-600 hover:text-gray-700 rounded-r"
             onClick={increaseCount}
@@ -92,10 +111,10 @@ const Arrow = (props: any) => {
           </button>
         </div>
         <div className="ml-20 text-sm py-1">
-          {"$" + (props.e.price * props.e.quantity).toFixed(2)}
+          {"$" + (props.e.price * quantity).toFixed(2)}
         </div>
         <div className="text-xs ml-20 py-2 font-semibold">
-          <button onClick={() => removeHandler(props.e.id)}>X</button>
+          <button onClick={() => removeHandler(props.e._id)}>X</button>
         </div>
       </div>
     </>
