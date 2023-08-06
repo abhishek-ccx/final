@@ -155,29 +155,17 @@ const crypto = require("crypto");
 const orderSchema = new mongoose.Schema({
   products: [
     {
-      product: {
-        type: mongoose.Types.ObjectId,
-        ref: "Product",
-      },
-      quantity: {
-        type: Number,
-        required: true,
-        default: 1,
-      },
+      type: mongoose.Types.ObjectId,
+      ref: "Product",
     },
   ],
-  totalPrice: {
-    type: Number,
-    required: true,
+  status: {
+    type: String,
+    default: "PROCESSING",
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-
-  status: {
-    type: String,
-    default: "Processing",
   },
 });
 

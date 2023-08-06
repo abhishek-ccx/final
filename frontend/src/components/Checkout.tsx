@@ -8,6 +8,7 @@ import Arrow from "./Arrow";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import router from "next/router";
+import Link from "next/link";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -46,6 +47,28 @@ const Checkout = () => {
       setCartTotalPrice(totalPrice);
     } else {
       setCartTotalPrice(0);
+    }
+  };
+
+  const handleAddToOrder = async () => {
+    try {
+      const productIds = cartItems.data.map((item) => item.product._id);
+      console.log(productIds);
+      // Send a POST request to the backend API to create the order
+      const response = await axios.post(
+        "http://127.0.0.1:3000/api/v1/order/",
+        {
+          products: productIds,
+          status: "Processing",
+        },
+        {
+          headers: { authorization: localStorage.getItem("token") },
+        },
+      );
+      console.log("Order created:");
+      // router.push("/success");
+    } catch (error) {
+      console.error("Error in creating a order:", error);
     }
   };
 
@@ -128,7 +151,10 @@ const Checkout = () => {
                 </div>
               </div>
               <div>
-                <button className="bg-orange-600 text-white w-96 mt-8 h-9">
+                <button
+                  className="bg-orange-600 text-white w-96 mt-8 h-9"
+                  onClick={() => handleAddToOrder()}
+                >
                   Checkout
                 </button>
               </div>
@@ -141,10 +167,9 @@ const Checkout = () => {
                     height={100}
                   /> */}
                 </div>
-                <div className="ml-1">
-                  <button onClick={handleAddToOrder}>Secure Checkout</button>
-                  {/* <button onClick={handleAddToOrder}>Secure Checkout</button> */}
-                </div>
+                <Link href="/order">
+                  <div className="ml-1">Secure Checkout</div>
+                </Link>
               </div>
             </div>
           </div>
