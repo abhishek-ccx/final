@@ -66,6 +66,16 @@ const Checkout = () => {
         },
       );
       console.log("Order created:");
+      const clearCartResponse = await axios.delete(
+        "http://127.0.0.1:3000/api/v1/cart/clearcart",
+        {
+          headers: { authorization: localStorage.getItem("token") },
+        },
+      );
+      console.log("Cart cleared:", clearCartResponse.data);
+
+      // Redirect to the order history page
+      router.push("/order");
       // router.push("/success");
     } catch (error) {
       console.error("Error in creating a order:", error);

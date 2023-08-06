@@ -121,6 +121,30 @@ exports.updateCart = async (req, res) => {
   }
 };
 
+exports.clearCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found while clearing the cart!", 404);
+    }
+
+    user.cart = [];
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: "ok",
+      message: "Cart cleared successfully!",
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 // exports.getCartProduct = async (req, res) => {
 //   try {
 //     const cartProduct = await Product.findById(req.params.id.trim());
