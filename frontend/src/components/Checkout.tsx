@@ -38,7 +38,7 @@ const Checkout = () => {
     fetchData();
   }, []);
 
-  const calculateTotalPrice = (cartItems) => {
+  const calculateTotalPrice = (cartItems: any) => {
     if (Array.isArray(cartItems) && cartItems.length > 0) {
       const totalPrice = cartItems.reduce(
         (accumulator, item) => accumulator + item.product.price * item.quantity,
@@ -52,7 +52,7 @@ const Checkout = () => {
 
   const handleAddToOrder = async () => {
     try {
-      const productIds = cartItems.data.map((item) => item.product._id);
+      const productIds = cartItems.data.map((item: any) => item.product._id);
       console.log(productIds);
       // Send a POST request to the backend API to create the order
       const response = await axios.post(
@@ -106,7 +106,6 @@ const Checkout = () => {
                       quantity={e.quantity}
                       id={e.id}
                       i={i}
-                      // calculateTotalPrice={calculateTotalPrice}
                     />
                   </React.Fragment>
                 ))

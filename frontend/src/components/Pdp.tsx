@@ -42,6 +42,7 @@ export default function Pdp() {
       // console.log(token);
       if (!token) {
         // Redirect to the login page if the user is not authenticated
+        alert("You are not logged in!");
         router.push("/login");
       } else {
         const res = await axios.patch(

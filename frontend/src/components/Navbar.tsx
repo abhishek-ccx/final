@@ -161,7 +161,7 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="#" className="flex items-center">
+                    <Link href="/cart" className="flex items-center">
                       <div className="h-6 w-6 relative">
                         <Image src={bag} className="w-full" alt="bag-logo" />
                       </div>

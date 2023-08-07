@@ -45,7 +45,7 @@ exports.getAllCart = async (req, res) => {
       data: cartArray,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(err.statusCode).json({
       status: "error!",
       message: error.message,
     });
@@ -79,7 +79,7 @@ exports.removeCart = async (req, res) => {
       message: "Item removed successfully from cart",
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(err.statusCode).json({
       status: "error",
       message: err.message,
     });
@@ -92,7 +92,7 @@ exports.updateCart = async (req, res) => {
     const { quantity } = req.body;
 
     // Check if the user is authenticated and get the user ID from the request
-    const userId = req.user._id; // Assuming you have set up authentication middleware
+    const userId = req.user._id;
 
     // Find the user and their cart item
     const user = await User.findById(userId);
@@ -144,24 +144,3 @@ exports.clearCart = async (req, res) => {
     });
   }
 };
-
-// exports.getCartProduct = async (req, res) => {
-//   try {
-//     const cartProduct = await Product.findById(req.params.id.trim());
-//     if (!product) {
-//       throw new Error("product not found", 404);
-//     }
-
-//     res.status(200).json({
-//       status: "success",
-//       data: {
-//         cartProduct,
-//       },
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       status: "error",
-//       message: err.message,
-//     });
-//   }
-// };

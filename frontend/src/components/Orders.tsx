@@ -35,6 +35,7 @@ const Order = () => {
         const updatedOrderHistory = [];
         TotalItems.map((e, i) => {
           const productArray = e.orderArray;
+          // console.log(e);
           for (const item of productArray) {
             const id = item._id;
             const name = item.name;

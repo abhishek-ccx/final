@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 
@@ -14,7 +14,7 @@ const Arrow = (props: any) => {
   const [isRemoved, setIsRemoved] = useState(false);
   const [quantity, setQuantity] = useState(props.quantity);
 
-  const removeHandler = async (productID) => {
+  const removeHandler = async (productID: any) => {
     try {
       const response = await axios.delete(
         `http://localhost:3000/api/v1/cart/removecart/${productID}`,

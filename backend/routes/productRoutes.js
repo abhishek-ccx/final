@@ -7,7 +7,6 @@ const {
   deleteProduct,
 } = require("./../controllers/productController");
 
-// const { authenticate } = require("./../controllers/authController");
 
 const router = express.Router();
 

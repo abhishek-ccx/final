@@ -19,27 +19,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// exports.getAllProducts = async (req, res) => {
-//   try {
-//     const products = await Product.find();
-//     if (!products) {
-//       throw new Error("Products not found.", 404);
-//     }
-
-//     res.status(200).json({
-//       status: "success",
-//       data: {
-//         products,
-//       },
-//     });
-//   } catch (err) {
-//     return res.status(err.statusCode || 500).json({
-//       status: "error!",
-//       message: err.message,
-//     });
-//   }
-// };
-
 exports.getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
