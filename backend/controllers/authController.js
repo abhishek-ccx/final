@@ -103,16 +103,16 @@ exports.authenticate = async (req, res, next) => {
   }
 };
 
-exports.restrictTo = (role) => {
-  return (req, res, next) => {
-    if (req.user.role !== role) {
-      return res.status(401).json({
-        status: "error",
-        message: "You do not have access!",
-      });
-    }
-    next();
-  };
+exports.restrictTo = (req, res) => {
+  const userRole = req.user;
+
+  if (!userRole) {
+    throw new Error("User role not found!", 404);
+  }
+
+  res.status(200).json({
+    data: userRole,
+  });
 };
 
 // exports.forgetPassword = async (req, res) => {

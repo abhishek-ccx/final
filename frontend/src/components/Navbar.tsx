@@ -1,12 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import bag from "./../img/bag.jpg";
 import user from "./../img/user.png";
 import Link from "next/link";
+import axios from "axios";
 
 const Navbar = () => {
   const router = useRouter();
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:3000/api/v1/users/getuserrole", {
+        headers: { authorization: localStorage.getItem("token") },
+      })
+      .then((response) => {
+        // console.log(response.data.data.role);
+        setUserRole(response.data.data.role);
+      })
+      .catch((error) => {
+        console.error("Error fetching user role:", error);
+        setUserRole(""); // Set userRole to empty string in case of error
+      });
+  }, []);
 
   const handleLogout = (e) => {
     // Remove the token from local storage on logout
@@ -14,6 +31,19 @@ const Navbar = () => {
     localStorage.removeItem("token");
     // Redirect to the login page after logout
     router.push("/login");
+  };
+
+  const isAdmin = userRole === "admin";
+
+  const handleAdminClick = () => {
+    if (isAdmin) {
+      router.push("/admin");
+    } else {
+      alert("You do not have permission to access the Admin section.");
+      router.push("/");
+      // Alternatively, you can redirect to another page
+      // router.push("/some-other-page");
+    }
   };
 
   return (
@@ -112,12 +142,12 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="/admin"
+                    <button
                       className="text-black dark:text-black hover:text-orange-400"
+                      onClick={handleAdminClick}
                     >
-                      <button>Admin</button>
-                    </Link>
+                      Admin
+                    </button>
                   </li>
                   <li>
                     <Link href="#" className="flex items-center">
