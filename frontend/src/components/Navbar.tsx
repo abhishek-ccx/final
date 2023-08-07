@@ -19,21 +19,17 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      axios
-        .get("http://127.0.0.1:3000/api/v1/users/getuserrole", {
-          headers: { authorization: localStorage.getItem("token") },
-        })
-        .then((response) => {
-          setUserRole(response.data.data.role);
-        })
-        .catch((error) => {
-          console.error("Error fetching user role:", error);
-          setUserRole("");
-        });
-    } else {
-      setUserRole("");
-    }
+    axios
+      .get("http://127.0.0.1:3000/api/v1/users/getuserrole", {
+        headers: { authorization: localStorage.getItem("token") },
+      })
+      .then((response) => {
+        setUserRole(response.data.data.role);
+      })
+      .catch((error) => {
+        console.error("Error fetching user role:", error);
+        setUserRole("");
+      });
   }, []);
 
   const handleLogout = (e) => {
