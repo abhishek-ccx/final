@@ -1,6 +1,5 @@
 const User = require("./../models/userModel");
 const jwt = require("jsonwebtoken");
-const { promisify } = require("util");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -66,19 +65,16 @@ exports.login = async (req, res) => {
 
 exports.authenticate = async (req, res, next) => {
   try {
-    // 1) Getting token and check whether its there
-    // console.log(req.headers);
+    // 1) Getting token and check whether it's there
     let token;
     if (req.headers.authorization) {
       token = req.headers.authorization;
-      // console.log(token);
     } else {
       throw new Error("You are not logged in!", 401);
     }
 
     // 2) Verification Token
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    // console.log(decoded);
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     // 3) Check if user still exists (user deleted after token assign)
     const user = await User.findById(decoded.id);

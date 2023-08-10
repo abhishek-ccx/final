@@ -22,7 +22,7 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 8; // Set default limit to 8 products per page
+    const limit = parseInt(req.query.limit); // Set default limit to 8 products per page
 
     const totalProducts = await Product.countDocuments();
     const totalPages = Math.ceil(totalProducts / limit);
